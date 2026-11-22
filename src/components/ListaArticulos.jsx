@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import FormularioArticulo from "./FormularioArticulo";
 
+const API_URL = "http://localhost:8080/api/articulos";
+
 function ListaArticulos() {
 
     const [articulos, setArticulos] = useState([]);
@@ -8,7 +10,7 @@ function ListaArticulos() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        fetch("http://localhost:8080/api/articulos")
+        fetch(API_URL)
             .then(response => {
                 if(!response.ok) {
                     throw new Error("Error http: " + response.status);
@@ -23,16 +25,31 @@ function ListaArticulos() {
             });
     }, []);
 
-    function agregarArticulo(articulo) {
-        const nuevoArticulo = {
-            ...articulo,
-            id: Date.now()
-        }
+    async function agregarArticulo(articulo) {
+        try{
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type" : "application/json"
+                },
+                body: JSON.stringify(articulo)
+            });
 
-        setArticulos(prev => [
-            ...prev, 
-            nuevoArticulo
-        ]);
+            if(!response.ok) {
+                throw new Error("Error HTTP: " + response.status);
+            }
+
+            const nuevoArticulo = await response.json();
+
+            setArticulos(prev => [
+                ...prev,
+                nuevoArticulo
+            ]);
+
+        } catch(error) {
+            setError(error.message);
+            console.error(error);
+        }
     }
 
     return(
