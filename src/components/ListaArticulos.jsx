@@ -8,6 +8,7 @@ function ListaArticulos() {
     const [articulos, setArticulos] = useState([]);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [articuloAEditar, setArticuloAEditar] = useState(null);
 
     useEffect(() => {
         fetch(API_URL)
@@ -19,13 +20,15 @@ function ListaArticulos() {
                 return response.json();
             })
             .then(data => setArticulos(data))
-            .catch(error => setError(error))
+            .catch(error => setError(error.message))
             .finally(() => {
                 setIsLoading(false);
             });
     }, []);
 
     async function agregarArticulo(articulo) {
+        setError(null);
+
         try{
             const response = await fetch(API_URL, {
                 method: "POST",
@@ -53,7 +56,44 @@ function ListaArticulos() {
         }
     }
 
+    async function editarArticulo(id, articulo) {
+        setError(null);
+
+        try{
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type" : "application/json"
+                },
+                body: JSON.stringify(articulo)
+            })
+
+            if(!response.ok) {
+                throw new Error("Http Error: " + response.status);
+            }
+
+            const articuloModificado = await response.json();
+
+            setArticulos(prev => 
+                prev.map(item => 
+                    item.id === id ? 
+                        articuloModificado
+                    : item
+                )
+            );
+
+            setArticuloAEditar(null);
+
+        } catch(error) {
+            setError(error.message);
+            console.error(error);
+            throw error;
+        }
+    }
+
     async function eliminarArticulo(id) {
+        setError(null);
+
         try{
             const response = await fetch(`${API_URL}/${id}`, {
                 method: "DELETE"
@@ -91,19 +131,11 @@ function ListaArticulos() {
                                 }}>
                                     Eliminar
                                 </button>
-                                <button
-                                    onClick={() => setArticulos(prev => 
-                                        prev.map(item => 
-                                            item.id === articulo.id ?
-                                            {
-                                                ...item,
-                                                precio: item.precio * 2
-                                            } :
-                                            item
-                                        )
-                                    )}
-                                >
-                                    Duplicar precio
+                                
+                                <button onClick={() => {
+                                    setArticuloAEditar(articulo);
+                                }}>
+                                    Editar Artículo
                                 </button>
                             </li>
                         ))}
@@ -111,7 +143,10 @@ function ListaArticulos() {
             )}
 
             <FormularioArticulo 
-                onAgregarArticulo={agregarArticulo} 
+                key={articuloAEditar?.id ?? "nuevo"} 
+                onAgregarArticulo={agregarArticulo}
+                onModificarArticulo={editarArticulo}
+                articuloAEditar={articuloAEditar} 
             />
 
         </>

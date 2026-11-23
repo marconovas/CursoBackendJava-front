@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 
 const API_CATEGORIAS = "http://localhost:8080/api/categorias";
 
-function FormularioArticulo({ onAgregarArticulo }) {
-    const [nombre, setNombre] = useState("");
-    const [precio, setPrecio] = useState("");
-    const [stock, setStock] = useState("");
-    const [categoriaId, setCategoriaId] = useState("");
+function FormularioArticulo({ onAgregarArticulo, onModificarArticulo, articuloAEditar }) {
+    const [nombre, setNombre] = useState(articuloAEditar?.nombre ?? "");
+    const [precio, setPrecio] = useState(articuloAEditar?.precio ?? "");
+    const [stock, setStock] = useState(articuloAEditar?.stock ?? "");
+    const [categoriaId, setCategoriaId] = useState(
+        articuloAEditar?.categoria.id ?? ""
+    );
     const [categorias, setCategorias] = useState([]);
 
     useEffect(() => {
@@ -23,6 +25,7 @@ function FormularioArticulo({ onAgregarArticulo }) {
             )
     }, []);
 
+
     async function manejarEnvio(e) {
         e.preventDefault();
 
@@ -36,16 +39,20 @@ function FormularioArticulo({ onAgregarArticulo }) {
         }
 
         try{
-            onAgregarArticulo(articulo);
+            if(articuloAEditar) {
+                await onModificarArticulo(articuloAEditar.id, articulo);   
+            } else {
+                await onAgregarArticulo(articulo);
+            }
 
             setNombre("");
             setPrecio("");
             setStock("");
             setCategoriaId("");
-        } catch(error) {
-            console.error("No se pudo guardar el articulo", error);
-        }
 
+        } catch(error) {
+            console.error("Error al guardar el artículo:", error);
+        }
     }
 
     return(
