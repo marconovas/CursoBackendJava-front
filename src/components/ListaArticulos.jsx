@@ -10,6 +10,8 @@ function ListaArticulos() {
     const [isLoading, setIsLoading] = useState(true);
     const [articuloAEditar, setArticuloAEditar] = useState(null);
 
+    const [mensaje, setMensaje] = useState("");
+
     useEffect(() => {
         fetch(API_URL)
             .then(response => {
@@ -30,6 +32,8 @@ function ListaArticulos() {
         setError(null);
 
         try{
+            setMensaje("");
+
             const response = await fetch(API_URL, {
                 method: "POST",
                 headers: {
@@ -49,6 +53,8 @@ function ListaArticulos() {
                 nuevoArticulo
             ]);
 
+            setMensaje("Artículo creado correctamente.");
+
         } catch(error) {
             setError(error.message);
             console.error(error);
@@ -60,6 +66,8 @@ function ListaArticulos() {
         setError(null);
 
         try{
+            setMensaje("");
+
             const response = await fetch(`${API_URL}/${id}`, {
                 method: "PUT",
                 headers: {
@@ -84,6 +92,8 @@ function ListaArticulos() {
 
             setArticuloAEditar(null);
 
+            setMensaje("Articulo modificado exitosamente.");
+
         } catch(error) {
             setError(error.message);
             console.error(error);
@@ -95,6 +105,8 @@ function ListaArticulos() {
         setError(null);
 
         try{
+            setMensaje("");
+
             const response = await fetch(`${API_URL}/${id}`, {
                 method: "DELETE"
             })
@@ -106,6 +118,8 @@ function ListaArticulos() {
             setArticulos(prev => 
                 prev.filter(item => item.id !== id)
             );
+
+            setMensaje("Artículo eliminado exitosamente.");
 
         } catch(error) {
             setError(error.message);
@@ -148,6 +162,8 @@ function ListaArticulos() {
                 onModificarArticulo={editarArticulo}
                 articuloAEditar={articuloAEditar} 
             />
+
+            {mensaje && <p>{mensaje}</p>}
 
         </>
        
