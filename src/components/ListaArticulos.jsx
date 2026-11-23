@@ -49,6 +49,7 @@ function ListaArticulos() {
         } catch(error) {
             setError(error.message);
             console.error(error);
+            throw error;
         }
     }
 

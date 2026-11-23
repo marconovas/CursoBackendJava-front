@@ -23,7 +23,7 @@ function FormularioArticulo({ onAgregarArticulo }) {
             )
     }, []);
 
-    function manejarEnvio(e) {
+    async function manejarEnvio(e) {
         e.preventDefault();
 
         const articulo = {
@@ -35,12 +35,17 @@ function FormularioArticulo({ onAgregarArticulo }) {
             }
         }
 
-        onAgregarArticulo(articulo);
+        try{
+            onAgregarArticulo(articulo);
 
-        setNombre("");
-        setPrecio("");
-        setStock("");
-        setCategoriaId("");
+            setNombre("");
+            setPrecio("");
+            setStock("");
+            setCategoriaId("");
+        } catch(error) {
+            console.error("No se pudo guardar el articulo", error);
+        }
+
     }
 
     return(
