@@ -141,7 +141,9 @@ function ListaArticulos() {
                                 <h2>{articulo.nombre}</h2>
                                 <p>{articulo.precio}</p>
                                 <button onClick={() => {
-                                    eliminarArticulo(articulo.id);
+                                    if(window.confirm("¿Estás seguro de que deseas eliminar este artículo?")) {
+                                        eliminarArticulo(articulo.id);
+                                    }
                                 }}>
                                     Eliminar
                                 </button>
@@ -164,6 +166,7 @@ function ListaArticulos() {
             />
 
             {mensaje && <p>{mensaje}</p>}
+            {error && <p>{error.message}</p>}
 
         </>
        
