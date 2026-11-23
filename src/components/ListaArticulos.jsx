@@ -53,6 +53,27 @@ function ListaArticulos() {
         }
     }
 
+    async function eliminarArticulo(id) {
+        try{
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: "DELETE"
+            })
+
+            if(!response.ok) {
+                throw new Error("Error http: " + response.status);
+            }
+
+            setArticulos(prev => 
+                prev.filter(item => item.id !== id)
+            );
+
+        } catch(error) {
+            setError(error.message);
+            console.error(error);
+            throw error;
+        }
+    }
+
     return(
         <>
             {isLoading ? (
@@ -66,7 +87,7 @@ function ListaArticulos() {
                                 <h2>{articulo.nombre}</h2>
                                 <p>{articulo.precio}</p>
                                 <button onClick={() => {
-                                    setArticulos(prev => prev.filter(item => item.id !== articulo.id))
+                                    eliminarArticulo(articulo.id);
                                 }}>
                                     Eliminar
                                 </button>
@@ -89,7 +110,9 @@ function ListaArticulos() {
                     </ul>
             )}
 
-            <FormularioArticulo onAgregarArticulo={agregarArticulo}/>
+            <FormularioArticulo 
+                onAgregarArticulo={agregarArticulo} 
+            />
 
         </>
        
