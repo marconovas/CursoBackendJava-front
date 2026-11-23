@@ -6,6 +6,7 @@ const API_URL="http://localhost:8080/api/categorias";
 function ListaCategorias() {
 
     const [categorias, setCategorias] = useState([]);
+    const [categoriaAEditar, setCategoriaAEditar] = useState(null);
 
     useEffect(() => {
         fetch(API_URL)
@@ -47,6 +48,35 @@ function ListaCategorias() {
         
     }
 
+    async function editarCategoria(categoria) {
+        try{
+            const response = await fetch(`${API_URL}/${categoriaAEditar.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type" : "application/json"
+                },
+                body: JSON.stringify(categoria)
+            });
+
+
+            if(!response.ok) {
+                throw new Error("Error http: " + response.status);
+            }
+
+            const categoriaModificada = await response.json();
+            
+            setCategorias(prev => prev.map(categoria => 
+                categoria.id === categoriaModificada.id ?
+                categoriaModificada 
+                : categoria
+            ));
+
+            setCategoriaAEditar(null);
+        } catch(error) {
+            console.error(error);
+        }
+    }
+
     return(
         <div>
             <h2>Gestión de Categorías</h2>
@@ -55,11 +85,22 @@ function ListaCategorias() {
                 {categorias.map(categoria => 
                     <li key={categoria.id}>
                         <p>{categoria.nombre}</p>
+
+                        <button
+                            onClick={() => setCategoriaAEditar(categoria)}
+                        >
+                            Editar
+                        </button>
                     </li>
                 )}
             </ul>
 
-            <FormularioCategoria onAgregarCategoria={nuevaCategoria}/>
+            <FormularioCategoria 
+                key={categoriaAEditar?.id ?? "nueva"}
+                onAgregarCategoria={nuevaCategoria}
+                onEditarCategoria={editarCategoria}
+                categoriaAEditar={categoriaAEditar}    
+            />
         </div>
     );
 }

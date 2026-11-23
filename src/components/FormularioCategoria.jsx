@@ -1,16 +1,27 @@
 import { useState } from "react";
 
-function FormularioCategoria ({ onAgregarCategoria }) {
-    const [nombre, setNombre] = useState("");
+function FormularioCategoria ({ onAgregarCategoria, onEditarCategoria, categoriaAEditar }) {
+    const [nombre, setNombre] = useState(categoriaAEditar?.nombre ?? "");
 
-    function manejarCategoria(e) {
+    async function manejarCategoria(e) {
         e.preventDefault();
 
         const categoria = {
             nombre
         }
 
-        onAgregarCategoria(categoria);
+        try{
+            if(categoriaAEditar) {
+                await onEditarCategoria(categoria);
+            } else {
+                await onAgregarCategoria(categoria);
+            }
+
+            setNombre("");
+        } catch(error) {
+            console.error(error);
+        }
+
     }
 
     return(
