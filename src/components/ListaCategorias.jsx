@@ -7,6 +7,8 @@ function ListaCategorias() {
 
     const [categorias, setCategorias] = useState([]);
     const [categoriaAEditar, setCategoriaAEditar] = useState(null);
+    const [mensaje, setMensaje] = useState("");
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         fetch(API_URL)
@@ -23,6 +25,10 @@ function ListaCategorias() {
     }, [])
 
     async function nuevaCategoria(categoria) {
+
+        setMensaje("");
+        setError(null);
+
         try{
             const response = await fetch(API_URL, {
                 method: "POST",
@@ -42,13 +48,21 @@ function ListaCategorias() {
                 ...prev,
                 nuevaCategoria
             ]);
+
+            setMensaje("Categoría creada exitosamente.");
+
         } catch(error) {
+            setError(error.message);
             console.error("No se puedo crear la categoría:", error);
         }
         
     }
 
     async function editarCategoria(categoria) {
+        
+        setMensaje("");
+        setError(null);
+
         try{
             const response = await fetch(`${API_URL}/${categoriaAEditar.id}`, {
                 method: "PUT",
@@ -71,8 +85,11 @@ function ListaCategorias() {
                 : categoria
             ));
 
+            setMensaje("Categoría modificada exitosamente.");
             setCategoriaAEditar(null);
+
         } catch(error) {
+            setError(error.message);
             console.error(error);
         }
     }
@@ -80,7 +97,11 @@ function ListaCategorias() {
     async function eliminaCategoria(id) {
         const respuesta = window.confirm("¿Estás seguro de que deseas eliminar esta categoría?");
 
+        
         if(respuesta) {
+            setMensaje("");
+            setError(null);
+        
             try{
                 const response = await fetch(`${API_URL}/${id}`, {
                     method: "DELETE"
@@ -95,7 +116,11 @@ function ListaCategorias() {
                         categoria.id !== id
                     )
                 );
+            
+                setMensaje("Categoría eliminada exitosamente.");
+
             } catch(error) {
+                setError(error.message);
                 console.error("No se pudo eliminar la categoria:", error);
             }
         }
@@ -104,6 +129,10 @@ function ListaCategorias() {
     return(
         <div>
             <h2>Gestión de Categorías</h2>
+
+            {mensaje && <h2>{mensaje}</h2>}
+
+            {error && <h2>{error}</h2>}
 
             <ul>
                 {categorias.map(categoria => 
