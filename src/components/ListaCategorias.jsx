@@ -9,6 +9,7 @@ function ListaCategorias() {
     const [categoriaAEditar, setCategoriaAEditar] = useState(null);
     const [mensaje, setMensaje] = useState("");
     const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         fetch(API_URL)
@@ -21,7 +22,8 @@ function ListaCategorias() {
 
             })
             .then(data => setCategorias(data))
-            .catch(error => console.error(error))
+            .catch(error => setError(error.message))
+            .finally(() => setIsLoading(false))
     }, [])
 
     async function nuevaCategoria(categoria) {
@@ -129,30 +131,36 @@ function ListaCategorias() {
     return(
         <div>
             <h2>Gestión de Categorías</h2>
-
+            
             {mensaje && <h2>{mensaje}</h2>}
 
-            {error && <h2>{error}</h2>}
 
-            <ul>
-                {categorias.map(categoria => 
-                    <li key={categoria.id}>
-                        <p>{categoria.nombre}</p>
+            {isLoading ? (
+                <p>Cargando Categorías...</p>
+            ) : error ? (
+                <h2>{error}</h2>
+            ) : (
+                <ul>
+                    {categorias.map(categoria => 
+                        <li key={categoria.id}>
+                            <p>{categoria.nombre}</p>
 
-                        <button
-                            onClick={() => setCategoriaAEditar(categoria)}
-                        >
-                            Editar
-                        </button>
+                            <button
+                                onClick={() => setCategoriaAEditar(categoria)}
+                            >
+                                Editar
+                            </button>
 
-                        <button
-                            onClick={() => eliminaCategoria(categoria.id)}
-                        >
-                            Eliminar
-                        </button>
-                    </li>
-                )}
-            </ul>
+                            <button
+                                onClick={() => eliminaCategoria(categoria.id)}
+                            >
+                                Eliminar
+                            </button>
+                        </li>
+                    )}
+                </ul>
+            )}
+
 
             <FormularioCategoria 
                 key={categoriaAEditar?.id ?? "nueva"}
