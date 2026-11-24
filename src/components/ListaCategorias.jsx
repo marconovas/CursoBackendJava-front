@@ -11,6 +11,7 @@ function ListaCategorias() {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [categoriaEliminando, setCategoriaEliminando] = useState(null);
 
     useEffect(() => {
         fetch(API_URL)
@@ -113,6 +114,8 @@ function ListaCategorias() {
 
         
         if(respuesta) {
+            setCategoriaEliminando(id);
+
             setMensaje("");
             setError(null);
         
@@ -136,6 +139,8 @@ function ListaCategorias() {
             } catch(error) {
                 setError(error.message);
                 console.error("No se pudo eliminar la categoria:", error);
+            } finally {
+                setCategoriaEliminando(null);
             }
         }
     }
@@ -164,9 +169,13 @@ function ListaCategorias() {
                             </button>
 
                             <button
+                                disabled={categoriaEliminando === categoria.id}
                                 onClick={() => eliminaCategoria(categoria.id)}
                             >
-                                Eliminar
+                                {categoriaEliminando === categoria.id ?
+                                    "Eliminando..." 
+                                    : "Eliminar"
+                                }
                             </button>
                         </li>
                     )}
