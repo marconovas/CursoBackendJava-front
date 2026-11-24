@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function FormularioCategoria ({ onAgregarCategoria, onEditarCategoria, categoriaAEditar }) {
+function FormularioCategoria ({ onAgregarCategoria, onEditarCategoria, categoriaAEditar, isSaving}) {
     const [nombre, setNombre] = useState(categoriaAEditar?.nombre ?? "");
 
     async function manejarCategoria(e) {
@@ -36,8 +36,9 @@ function FormularioCategoria ({ onAgregarCategoria, onEditarCategoria, categoria
 
             <button
                 type="submit"
+                disabled={isSaving}
             >
-                Enviar
+                {isSaving ? "Guardando..." : "Enviar"}
             </button>
         </form>
     )

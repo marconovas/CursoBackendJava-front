@@ -10,6 +10,7 @@ function ListaCategorias() {
     const [mensaje, setMensaje] = useState("");
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         fetch(API_URL)
@@ -30,6 +31,7 @@ function ListaCategorias() {
 
         setMensaje("");
         setError(null);
+        setIsSaving(true);
 
         try{
             const response = await fetch(API_URL, {
@@ -54,8 +56,15 @@ function ListaCategorias() {
             setMensaje("Categoría creada exitosamente.");
 
         } catch(error) {
+
             setError(error.message);
             console.error("No se puedo crear la categoría:", error);
+            throw error;
+        
+        } finally {
+        
+            setIsSaving(false);
+        
         }
         
     }
@@ -64,6 +73,7 @@ function ListaCategorias() {
         
         setMensaje("");
         setError(null);
+        setIsSaving(true);
 
         try{
             const response = await fetch(`${API_URL}/${categoriaAEditar.id}`, {
@@ -89,10 +99,12 @@ function ListaCategorias() {
 
             setMensaje("Categoría modificada exitosamente.");
             setCategoriaAEditar(null);
-
         } catch(error) {
             setError(error.message);
             console.error(error);
+            throw error;
+        } finally {
+            setIsSaving(false);
         }
     }
 
@@ -167,6 +179,7 @@ function ListaCategorias() {
                 onAgregarCategoria={nuevaCategoria}
                 onEditarCategoria={editarCategoria}
                 categoriaAEditar={categoriaAEditar}    
+                isSaving={isSaving}
             />
         </div>
     );
