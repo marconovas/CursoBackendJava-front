@@ -1,6 +1,6 @@
 import './App.css'
-import Contador from './components/Contador'
 import ListaArticulos from './components/ListaArticulos'
+import ListaCategorias from './components/ListaCategorias.jsx'
 import Seccion from './components/Seccion'
 
 const articulos = [
@@ -21,7 +21,7 @@ function App() {
 
       <ListaArticulos articulos={articulos} />
 
-      <Contador />
+      <ListaCategorias />
 
     </div> 
   )
