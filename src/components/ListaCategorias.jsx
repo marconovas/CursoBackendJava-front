@@ -77,6 +77,30 @@ function ListaCategorias() {
         }
     }
 
+    async function eliminaCategoria(id) {
+        const respuesta = window.confirm("¿Estás seguro de que deseas eliminar esta categoría?");
+
+        if(respuesta) {
+            try{
+                const response = await fetch(`${API_URL}/${id}`, {
+                    method: "DELETE"
+                });
+    
+                if(!response.ok) {
+                    throw new Error("Http error:" + response.status);
+                }
+    
+                setCategorias(prev => 
+                    prev.filter(categoria => 
+                        categoria.id !== id
+                    )
+                );
+            } catch(error) {
+                console.error("No se pudo eliminar la categoria:", error);
+            }
+        }
+    }
+
     return(
         <div>
             <h2>Gestión de Categorías</h2>
@@ -90,6 +114,12 @@ function ListaCategorias() {
                             onClick={() => setCategoriaAEditar(categoria)}
                         >
                             Editar
+                        </button>
+
+                        <button
+                            onClick={() => eliminaCategoria(categoria.id)}
+                        >
+                            Eliminar
                         </button>
                     </li>
                 )}
