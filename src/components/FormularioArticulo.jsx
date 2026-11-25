@@ -10,6 +10,7 @@ function FormularioArticulo({ onAgregarArticulo, onModificarArticulo, articuloAE
         articuloAEditar?.categoria.id ?? ""
     );
     const [categorias, setCategorias] = useState([]);
+    const [errorValidacion, setErrorValidacion] = useState("");
 
     useEffect(() => {
         fetch(API_CATEGORIAS)
@@ -28,9 +29,30 @@ function FormularioArticulo({ onAgregarArticulo, onModificarArticulo, articuloAE
 
     async function manejarEnvio(e) {
         e.preventDefault();
+        setErrorValidacion("");
+
+        if(nombre.trim() === "") {
+            setErrorValidacion("El nombre no puede estar vacío.");
+            return;
+        }
+        
+        if(Number.isNaN(Number(precio)) || Number(precio) <= 0) {
+            setErrorValidacion("El precio debe ser mayor que cero.");
+            return;
+        } 
+        
+        if(Number.isNaN(Number(stock)) || Number(stock) <= 0) {
+            setErrorValidacion("El stock debe ser mayor que cero.");
+            return;
+        } 
+
+        if(categoriaId === "") {
+            setErrorValidacion("Debés seleccionar una categoría.");
+            return;
+        }
 
         const articulo = {
-            nombre,
+            nombre: nombre.trim(),
             precio : Number(precio),
             stock: Number(stock),
             categoria: {
@@ -51,6 +73,7 @@ function FormularioArticulo({ onAgregarArticulo, onModificarArticulo, articuloAE
             setCategoriaId("");
 
         } catch(error) {
+            setErrorValidacion(error.message);
             console.error("Error al guardar el artículo:", error);
         }
     }
@@ -103,6 +126,8 @@ function FormularioArticulo({ onAgregarArticulo, onModificarArticulo, articuloAE
                 ))}
             
             </select>
+
+            {errorValidacion && <p>{errorValidacion}</p>}
             
             <button type="submit">Enviar</button>
         </form>

@@ -2,12 +2,19 @@ import { useState } from "react";
 
 function FormularioCategoria ({ onAgregarCategoria, onEditarCategoria, categoriaAEditar, isSaving}) {
     const [nombre, setNombre] = useState(categoriaAEditar?.nombre ?? "");
+    const [errorValidacion, setErrorValidacion] = useState("");
 
     async function manejarCategoria(e) {
         e.preventDefault();
+        setErrorValidacion("");
+
+        if(nombre.trim() === "") {
+            setErrorValidacion("El nombre es obligatorio.");
+            return;
+        }
 
         const categoria = {
-            nombre
+            nombre: nombre.trim()
         }
 
         try{
@@ -19,6 +26,7 @@ function FormularioCategoria ({ onAgregarCategoria, onEditarCategoria, categoria
 
             setNombre("");
         } catch(error) {
+            setErrorValidacion(error.message);
             console.error(error);
         }
 
@@ -32,7 +40,10 @@ function FormularioCategoria ({ onAgregarCategoria, onEditarCategoria, categoria
                 onChange={e => setNombre(e.target.value)}
                 value={nombre}
                 type="text" 
+                required
             />
+
+            {errorValidacion && <p>{errorValidacion}</p>}
 
             <button
                 type="submit"
