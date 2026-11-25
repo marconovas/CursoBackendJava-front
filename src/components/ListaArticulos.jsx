@@ -11,6 +11,7 @@ function ListaArticulos() {
     const [articuloAEditar, setArticuloAEditar] = useState(null);
 
     const [mensaje, setMensaje] = useState("");
+    const[eliminandoArticulo, setEliminandoArticulo] = useState(null);
 
     useEffect(() => {
         fetch(API_URL)
@@ -103,6 +104,7 @@ function ListaArticulos() {
 
     async function eliminarArticulo(id) {
         setError(null);
+        setEliminandoArticulo(id);
 
         try{
             setMensaje("");
@@ -125,6 +127,8 @@ function ListaArticulos() {
             setError(error.message);
             console.error(error);
             throw error;
+        } finally {
+            setEliminandoArticulo(null);
         }
     }
 
@@ -140,12 +144,14 @@ function ListaArticulos() {
                             <li key={articulo.id}>
                                 <h2>{articulo.nombre}</h2>
                                 <p>{articulo.precio}</p>
-                                <button onClick={() => {
+                                <button 
+                                disabled={setEliminandoArticulo === articulo.id}
+                                onClick={() => {
                                     if(window.confirm("¿Estás seguro de que deseas eliminar este artículo?")) {
                                         eliminarArticulo(articulo.id);
                                     }
                                 }}>
-                                    Eliminar
+                                    {eliminandoArticulo === articulo.id ? "Eliminando..." : "Eliminar"}
                                 </button>
                                 
                                 <button onClick={() => {
@@ -166,7 +172,6 @@ function ListaArticulos() {
             />
 
             {mensaje && <p>{mensaje}</p>}
-            {error && <p>{error.message}</p>}
 
         </>
        
